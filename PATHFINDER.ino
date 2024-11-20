@@ -9,6 +9,8 @@ struct Color{
   float g;
   float b;
 }
+
+//el diablo anda suelto, va pisando el mismo pavimento, recorriendo el barrio por comleto
 void setup() {
   Serial.begin(9600);
   ultraSonic.attach(2);
