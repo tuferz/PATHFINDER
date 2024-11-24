@@ -14,6 +14,12 @@ struct Color{
 void setup() {
   Serial.begin(9600);
   ultraSonic.attach(2);
+
+  // Verificar si el sensor se inicializó correctamente
+  if (!sensorRGB.begin()) {
+    Serial.println("No se encontró el sensor");
+    while (1); // Detener ejecución si el sensor no se encontró
+  }
 }
 
 void loop() {
@@ -28,12 +34,12 @@ Color detectarColor(){
 
 
 void USSweep(Servo servo){
-  servo.write(0);  // Move to 90 degrees (initial position)
-  delay(1000);     //Wait 1 second
+  servo.write(0);  // Mover a 0 grados (posicion inicial)
+  delay(1000);     
 
-  servo.write(80);   // Move 90 degrees in one direction (0 degrees)
-  delay(1000);       // Wait 1 second
+  servo.write(80);   // Mover a 80 grados 
+  delay(1000);       
 
-  servo.write(156); // Move 180 degrees in the opposite direction
-  delay(1000);      // Wait 1 second
+  servo.write(156); //mover a 156 grados (ajuste fino)
+  delay(1000);     
 }
