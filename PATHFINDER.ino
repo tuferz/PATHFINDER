@@ -8,7 +8,7 @@ struct Color{
   float r;
   float g;
   float b;
-};
+}//okno
 
 //el diablo anda suelto, va pisando el mismo pavimento, recorriendo el barrio por comleto
 void setup() {
