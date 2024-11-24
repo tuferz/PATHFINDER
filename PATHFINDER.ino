@@ -1,29 +1,40 @@
 #include <Servo.h> //libreria de servos
 #include "Adafruit_TCS34725.h" //libreria de sensor de color
 
-Servo ultraSonic;
+
+#define TRIG_PIN 9 //modificar ambos valores del pin cuando se tenga la info
+#define ECHO_PIN 10
+#define UMBRAL_DISTANCIA 15
+
+const int POS_IZQUIERDA = 15;
+const int POS_CENTRO = 80;
+const int POS_DERECHA = 155;
+const int servoPin = 2;
+
+Servo servoUltraSonic;
 Adafruit_TCS34725 sensorRGB = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 
 struct Color{
   float r;
   float g;
   float b;
-}//okno
+};
 
-//el diablo anda suelto, va pisando el mismo pavimento, recorriendo el barrio por comleto
+
 void setup() {
   Serial.begin(9600);
-  ultraSonic.attach(2);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  servoUltraSonic.attach(servoPin);
 
-  // Verificar si el sensor se inicializó correctamente
   if (!sensorRGB.begin()) {
     Serial.println("No se encontró el sensor");
-    while (1); // Detener ejecución si el sensor no se encontró
+    while (1); 
   }
 }
 
 void loop() {
-  USSweep(ultraSonic);
+  buscarCamino(servoUltraSonic);
 }
 
 Color detectarColor(){
@@ -32,14 +43,38 @@ Color detectarColor(){
   return color;
 }
 
+long medirDistancia(){
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
 
-void USSweep(Servo servo){
-  servo.write(0);  // Mover a 0 grados (posicion inicial)
-  delay(1000);     
+  long duration = pulseIn(ECHO_PIN, HIGH);
+  long distance = (duration/2) / 29.1;
+  return distance;
+}
 
-  servo.write(80);   // Mover a 80 grados 
-  delay(1000);       
 
-  servo.write(156); //mover a 156 grados (ajuste fino)
-  delay(1000);     
+int buscarCamino(Servo servoUltra){
+
+  servoUltra.write(POS_IZQUIERDA);  // Mover hacia la izquierda
+  delay(1000);
+  if(!hayPared()){
+    servoUltra.write(POS_CENTRO); //regresar a posicion central
+    return 0;
+  }  
+   
+  servoUltra.write(POS_DERECHA); //mover hacia la derecha
+  delay(1000); 
+  if(!hayPared()){
+    servoUltra.write(POS_CENTRO);//Regresar a la posicion inicial
+    return 1;
+  }
+  servoUltra.write(POS_CENTRO);
+  return 2;
+}
+
+bool hayPared(){
+  return medirDistancia() <= UMBRAL_DISTANCIA;
 }
