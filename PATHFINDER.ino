@@ -6,6 +6,8 @@
 #define ECHO_PIN 7
 #define UMBRAL_DISTANCIA 30
 
+int celdas = 0;
+
 //variables del servo del ultrasonico
 const int POS_IZQUIERDA = 2140;
 const int POS_CENTRO = 1450;
@@ -113,13 +115,12 @@ void caminar(){
         s3 = digitalRead(x3);
       }
     }else if(s1 == 0 || s4 == 0){
-      detener();
       Serial.println("Interseccion detectada");
-      delay(1000);
-      avanzar();
-    }else{
-      detener();
-      Serial.println("fuera de la linea, deteniendose");
+      while(s1 == 0 || s4 == 0){
+        avanzar();
+      }
+      celdas +=1;
+      break;
     }
     delay(10);
   }
@@ -173,7 +174,7 @@ void girarIzquierda() {
 }
 
 void girarDerecha() {
-  analogWrite(leftForward, 135); 
+  analogWrite(leftForward, 1); 
   analogWrite(leftReverse, 0);
   analogWrite(rightForward, 0);
   analogWrite(rightReverse, 150);
