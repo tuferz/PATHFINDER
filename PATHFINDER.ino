@@ -2,8 +2,8 @@
 #include "Adafruit_TCS34725.h" //libreria de sensor de color
 
 
-#define TRIG_PIN 9 //modificar ambos valores del pin cuando se tenga la info
-#define ECHO_PIN 10
+#define TRIG_PIN 8 //modificar ambos valores del pin cuando se tenga la info
+#define ECHO_PIN 7
 #define UMBRAL_DISTANCIA 15
 
 const int POS_IZQUIERDA = 15;
@@ -62,6 +62,7 @@ int buscarCamino(Servo servoUltra){
   delay(1000);
   if(!hayPared()){
     servoUltra.write(POS_CENTRO); //regresar a posicion central
+    serial.print("Camino encontrado a la izquierda")
     return 0;
   }  
    
@@ -69,9 +70,11 @@ int buscarCamino(Servo servoUltra){
   delay(1000); 
   if(!hayPared()){
     servoUltra.write(POS_CENTRO);//Regresar a la posicion inicial
+    serial.print("Camino encontrado a la derecha")
     return 1;
   }
   servoUltra.write(POS_CENTRO);
+  serial.print("Callejon >:'(")
   return 2;
 }
 
