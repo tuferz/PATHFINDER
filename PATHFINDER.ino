@@ -1,4 +1,4 @@
-#include <Servo.h> //libreria de servos
+#include <ServoTimer2.h> //libreria de servos
 #include "Adafruit_TCS34725.h" //libreria de sensor de color
 
 
@@ -6,10 +6,24 @@
 #define ECHO_PIN 7
 #define UMBRAL_DISTANCIA 15
 
-const int POS_IZQUIERDA = 15;
-const int POS_CENTRO = 80;
-const int POS_DERECHA = 155;
-const int servoPin = 2;
+//variables del servo del ultrasonico
+const int POS_IZQUIERDA = 2140;
+const int POS_CENTRO = 1450;
+const int POS_DERECHA = 600;
+const int servoPin = 3;
+
+//variables de los motores
+const int leftForward = 9;
+const int leftReverse = 6;
+const int rightForward = 10;
+const int rightReverse = 5;
+
+//variables de los IR
+int s1, s2, s3, s4;
+const int x1 = 14;
+const int x2 = 15;
+const int x3 = 16;
+const int x4 = 17;
 
 Servo servoUltraSonic;
 Adafruit_TCS34725 sensorRGB = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
@@ -23,6 +37,17 @@ struct Color{
 
 void setup() {
   Serial.begin(9600);
+
+  pinMode(leftForward, OUTPUT);
+  pinMode(leftReverse, OUTPUT);
+  pinMode(rightForward, OUTPUT);
+  pinMode(rightReverse, OUTPUT);
+
+  pinMode(x1, INPUT);
+  pinMode(x2, INPUT);
+  pinMode(x3, INPUT);
+  pinMode(x4, INPUT);
+
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
   servoUltraSonic.attach(servoPin);
@@ -55,6 +80,21 @@ long medirDistancia(){
   return distance;
 }
 
+void caminar(){
+  while(true){
+    int s1 = digitalRead(x1);
+    int s2 = digitalRead(x2);
+    int s3 = digitalRead(x3);
+    int s4 = digitalRead(x4);
+
+    if(hayPared()){
+      detener();
+      break;
+    }
+
+    if(s2 == )
+  }
+}
 
 int buscarCamino(Servo servoUltra){
 
@@ -62,7 +102,7 @@ int buscarCamino(Servo servoUltra){
   delay(1000);
   if(!hayPared()){
     servoUltra.write(POS_CENTRO); //regresar a posicion central
-    serial.print("Camino encontrado a la izquierda")
+    Serial.print("Camino encontrado a la izquierda")
     return 0;
   }  
    
@@ -70,14 +110,52 @@ int buscarCamino(Servo servoUltra){
   delay(1000); 
   if(!hayPared()){
     servoUltra.write(POS_CENTRO);//Regresar a la posicion inicial
-    serial.print("Camino encontrado a la derecha")
+    Serial.print("Camino encontrado a la derecha")
     return 1;
   }
   servoUltra.write(POS_CENTRO);
-  serial.print("Callejon >:'(")
+  Serial.print("Callejon >:(")
   return 2;
 }
 
 bool hayPared(){
   return medirDistancia() <= UMBRAL_DISTANCIA;
 }
+
+void avanzar() {
+  analogWrite(leftForward, 150); 
+  analogWrite(leftReverse, 0);
+  analogWrite(rightForward, 125); 
+  analogWrite(rightReverse, 0);
+}
+
+void retroceder() {
+  analogWrite(leftForward, 0);
+  analogWrite(leftReverse, 150); 
+  analogWrite(rightForward, 0);
+  analogWrite(rightReverse, 125); 
+}
+
+void girarIzquierda() {
+  analogWrite(leftForward, 0);
+  analogWrite(leftReverse, 150); 
+  analogWrite(rightForward, 125); 
+  analogWrite(rightReverse, 0);
+}
+
+void girarDerecha() {
+  analogWrite(leftForward, 150); 
+  analogWrite(leftReverse, 0);
+  analogWrite(rightForward, 0);
+  analogWrite(rightReverse, 125);
+}
+
+void detener(){
+  analogWrite(leftForward, 0); 
+  analogWrite(leftReverse, 0);
+  analogWrite(rightForward, 0);
+  analogWrite(rightReverse, 0);
+}
+
+
+
