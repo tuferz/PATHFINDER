@@ -61,17 +61,7 @@ void setup() {
 void loop() {
   //buscarCamino(servoUltraSonic);
   //avanzar();
-  s1 = digitalRead(x1);
-  s2 = digitalRead(x2);
-  s3 = digitalRead(x3);
-  s4 = digitalRead(x4);
-
-  Serial.print(s1);
-  Serial.print(s2);
-  Serial.print(s3);
-  Serial.println(s4);
-
-  delay(1000);
+  caminar();
 
 }
 
