@@ -4,7 +4,7 @@
 
 #define TRIG_PIN 8 //modificar ambos valores del pin cuando se tenga la info
 #define ECHO_PIN 7
-#define UMBRAL_DISTANCIA 30
+#define UMBRAL_DISTANCIA 25
 
 int celdas = 0;
 
@@ -62,9 +62,11 @@ void setup() {
 
 void loop() {
   //buscarCamino(servoUltraSonic);
-  //avanzar();
-  caminar();
-
+  
+  avanzar();
+  buscarCamino(servoUltraSonic);
+  Serial.println(celdas);
+  delay(500);
 }
 
 Color detectarColor(){
@@ -85,46 +87,7 @@ long medirDistancia(){
   return distance;
 }
 
-void caminar(){
-  while(true){
-    int s1 = digitalRead(x1);
-    int s2 = digitalRead(x2);
-    int s3 = digitalRead(x3);
-    int s4 = digitalRead(x4);
 
-    if(hayPared()){
-      detener();
-      break;
-    }
-
-    if(s2 == 0 && s3 == 0){
-      avanzar();
-    }else if(s2 == 0 && s3 == 1){
-
-      while(s2 == 0 && s3 ==1){
-
-        girarDerecha();
-        s2 = digitalRead(x2);
-        s3 = digitalRead(x3);
-
-      }
-    }else if(s2 == 1 && s3 == 0){
-      while (s2 == 1 && s3 == 0){
-        girarIzquierda();
-        s2 = digitalRead(x2);
-        s3 = digitalRead(x3);
-      }
-    }else if(s1 == 0 || s4 == 0){
-      Serial.println("Interseccion detectada");
-      while(s1 == 0 || s4 == 0){
-        avanzar();
-      }
-      celdas +=1;
-      break;
-    }
-    delay(10);
-  }
-}
 
 int buscarCamino(ServoTimer2 servoUltra){
 
@@ -153,31 +116,63 @@ bool hayPared(){
 }
 
 void avanzar() {
-  analogWrite(leftForward, 135); 
-  analogWrite(leftReverse, 0);
-  analogWrite(rightForward, 150); 
-  analogWrite(rightReverse, 0);
+  s1 = digitalRead(x1);
+  s2 = digitalRead(x2);
+  s3 = digitalRead(x3);
+  s4 = digitalRead(x4);
+
+  while(s1 == 0 || s2 == 0){
+
+    if(s2 == 0 && s3 ==0){
+      analogWrite(leftForward, 122); 
+      analogWrite(leftReverse, 0);
+      analogWrite(rightForward, 128); 
+      analogWrite(rightReverse, 0);  
+    }
+    
+    if(s2 == 1 && s3 == 0){
+      analogWrite(leftForward, 122); 
+      analogWrite(leftReverse, 0);
+      analogWrite(rightForward, 138); 
+      analogWrite(rightReverse, 0);
+    }
+    if(s2 == 0 && s3 == 1){
+      analogWrite(leftForward, 132); 
+      analogWrite(leftReverse, 0);
+      analogWrite(rightForward, 122); 
+      analogWrite(rightReverse, 0);
+    }
+    if(s1 == 0 || s2 == 0){
+      celdas++;
+    }
+    s1 = digitalRead(x1);
+    s2 = digitalRead(x2);
+    s3 = digitalRead(x3);
+    s4  = digitalRead(x4);
+  }
+  detener();
+  
 }
 
 void retroceder() {
   analogWrite(leftForward, 0);
-  analogWrite(leftReverse, 135); 
+  analogWrite(leftReverse, 122); 
   analogWrite(rightForward, 0);
-  analogWrite(rightReverse, 150); 
+  analogWrite(rightReverse, 128); 
 }
 
 void girarIzquierda() {
   analogWrite(leftForward, 0);
-  analogWrite(leftReverse, 135); 
-  analogWrite(rightForward, 150); 
+  analogWrite(leftReverse, 122); 
+  analogWrite(rightForward, 128); 
   analogWrite(rightReverse, 0);
 }
 
 void girarDerecha() {
-  analogWrite(leftForward, 1); 
+  analogWrite(leftForward, 122); 
   analogWrite(leftReverse, 0);
   analogWrite(rightForward, 0);
-  analogWrite(rightReverse, 150);
+  analogWrite(rightReverse, 128);
 }
 
 void detener(){
